@@ -7,11 +7,14 @@ const TextEditor = () => {
     const gBuff = new GBuffer();
     gBuff.insertText("hello");
 
-    const canvasRef = useRef(null);
+    const canvasRef = useRef<HTMLCanvasElement>(null);
 
     function draw() {
 	const canvas = canvasRef.current;
+	if (!canvas) return;
 	const ctx = canvas.getContext("2d");
+
+	if (!ctx) return;
 
 	ctx.fillStyle = '#000000'
 	ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height)
@@ -31,10 +34,11 @@ const TextEditor = () => {
     useEffect(() => {
 	draw();
 	const canvas = canvasRef.current;
+	if (!canvas) return;
 	canvas.focus();
     }, [gBuff.buffer]);
 
-    function onInputHandle(event) {
+    function onInputHandle(event : React.KeyboardEvent<HTMLCanvasElement>) {
 	if (event.key.length === 1) {
 	    gBuff.insertText(event.key);
 	    draw();
@@ -61,7 +65,7 @@ const TextEditor = () => {
 	    height="720" 
 	    tabIndex={0}
 	    onKeyDown={onInputHandle}
-	    onClick={() => canvasRef.current.focus()}
+	    onClick={() => canvasRef.current?.focus()}
 	></canvas>
     )
 }
