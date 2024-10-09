@@ -26,40 +26,34 @@ test('Checks gap buffer cursor movement', () => {
     let gBuffer = new GBuffer();
 
     expect(gBuffer.insertText('abc')).toBe(true);
-    gBuffer.print();
 
     gBuffer.moveCursorLeftBy(1);
-    gBuffer.print();
 
     expect(gBuffer.insertText('abc')).toBe(true);
-    gBuffer.print();
     expect(gBuffer.dump()).toBe('ababcc');
 
     gBuffer.moveCursorRightBy(2);
-    gBuffer.print();
+    gBuffer.setCursor(0);
+
+    expect(gBuffer.left).toBe(0);
 });
 
 test('Checks gap buffer deletion', () => {
     let gBuffer = new GBuffer();
 
     gBuffer.insertText('abc');
-    gBuffer.print();
 
     expect(gBuffer.dump()).toBe('abc');
 
     gBuffer.moveCursorLeftBy(1);
-    gBuffer.print();
 
     gBuffer.backspace();
-    gBuffer.print();
 
     expect(gBuffer.dump()).toBe('ac');
 
     gBuffer.delete();
-    gBuffer.print();
 
     expect(gBuffer.dump()).toBe('a');
 
     gBuffer.moveCursorRightBy(2);
-    gBuffer.print();
 });

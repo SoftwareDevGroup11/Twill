@@ -15,6 +15,10 @@ export class GBuffer {
 	this.right = MAX_GBUFFER_LENGTH - 1;
     }
 
+    getLength() : number {
+	return this.left + MAX_GBUFFER_LENGTH - 1 - this.right;
+    }
+
     insertText(text : string) : boolean {
 	for (let i = 0; i < text.length; i++) {
 	    if (!this.insertChar(text[i])) {
@@ -34,6 +38,15 @@ export class GBuffer {
 	if (this.left <= 0) return;
 	this.left -= 1;
 	this.buffer[this.left] = GBUFFER_DUMMY_CHAR;
+    }
+
+    setCursor(col : number) {
+	let amount = Math.abs(this.left - col);
+
+	(this.left < col) ? // Move Left or Right
+	    this.moveCursorRightBy(amount)
+	:
+	    this.moveCursorLeftBy(amount);
     }
 
     moveCursorLeftBy(amount : number) : void {
