@@ -49,11 +49,11 @@ export class GBuffer {
     }
 
     print() : void {
-	// console.log(this.buffer.join(""));
-	// let arr = Array<string>(MAX_GBUFFER_LENGTH).fill(" ");
-	// arr[this.left] = "^";
-	// arr[this.right] = "^";
-	// console.log(arr.join(""));
+	console.log(this.buffer.join(""));
+	let arr = Array<string>(MAX_GBUFFER_LENGTH).fill(" ");
+	arr[this.left] = "^";
+	arr[this.right] = "^";
+	console.log(arr.join(""));
     }
 
     dump() : string {
