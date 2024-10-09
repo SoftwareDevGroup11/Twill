@@ -40,7 +40,14 @@ export class GBuffer {
 	this.buffer[this.left] = GBUFFER_DUMMY_CHAR;
     }
 
-    setCursor(col : number) {
+    clearRight() : void {
+	for (let i = this.right + 1; i < MAX_GBUFFER_LENGTH; i++) {
+	    this.buffer[i] = GBUFFER_DUMMY_CHAR;
+	}
+	this.right = MAX_GBUFFER_LENGTH - 1;
+    }
+
+    setCursor(col : number) : void {
 	let amount = Math.abs(this.left - col);
 
 	(this.left < col) ? // Move Left or Right

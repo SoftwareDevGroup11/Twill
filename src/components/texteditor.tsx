@@ -32,7 +32,7 @@ const TextEditor = () => {
 	}
 
 	// Drawing the cursor
-	ctx.fillRect(file.lines[file.currentLine].left * 12, file.currentLine * 20, 1, 23);
+	ctx.fillRect(file.lines[file.currentLine].left * 12, file.currentLine * 20 + 25, 12, 1);
     }
 
     useEffect(() => {
@@ -65,6 +65,9 @@ const TextEditor = () => {
 	    draw();
         } else if (event.key === "Delete") {
 	    file.delete();
+	    draw();
+        } else if (event.key === "Enter") {
+	    file.insertNewline();
 	    draw();
         }
     }

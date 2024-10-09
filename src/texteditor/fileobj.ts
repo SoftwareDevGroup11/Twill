@@ -17,14 +17,33 @@ export class FileOBJ {
 	}
     }
 
+    insertNewline() {
+	let currGBuff = this.lines[this.currentLine];
+	let newLine = new GBuffer();
+
+	newLine.insertText(currGBuff.buffer.slice(currGBuff.right + 1).join(""));
+	newLine.setCursor(0);
+
+	currGBuff.clearRight();
+
+	this.lines.splice(this.currentLine + 1, 0, newLine);
+	this.currentLine += 1;
+    }
+
     insertText(text: string) {
 	this.lines[this.currentLine].insertText(text);
     }
 
+    // TODO: if we are at the beginning of the line
+    // then pressing the backspace, we go to the previous line
+    // Basically merging the current line and the above line
     backspace() {
 	this.lines[this.currentLine].backspace();
     }
 
+    // TODO: if we are at the end of the line
+    // then pressing the delete, we bring the next line to the current line
+    // Basically merging the current line and the below line
     delete() {
 	this.lines[this.currentLine].delete();
     }
