@@ -1,4 +1,3 @@
-import React from 'react';
 import './App.css';
 import TextEditor from './components/texteditor.tsx';
 
