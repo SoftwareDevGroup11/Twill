@@ -69,7 +69,10 @@ const TextEditor = () => {
         } else if (event.key === "Enter") {
 	    file.insertNewline();
 	    draw();
-        }
+        } else if(event.key === "Tab"){
+		file.insertText("				"); // added a very naive implementation of TAB, using movecursorRightby 4 doesn't provide intended output
+		draw();
+	}
     }
 
     return (
