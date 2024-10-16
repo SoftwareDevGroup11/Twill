@@ -32,7 +32,7 @@ const TextEditor = () => {
 	}
 
 	// Drawing the cursor
-	ctx.fillRect(file.lines[file.currentLine].left * 12, file.currentLine * 20 + 25, 12, 1);
+	ctx.fillRect(file.lines[file.currentLine].left * 12, file.currentLine * 20, 1, 20);
     }
 
     useEffect(() => {
