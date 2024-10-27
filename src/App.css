@@ -3,11 +3,15 @@
   padding: 0;
   background-color: #2e3b4e;
   color: #fff;
-  padding: 10px 20px;
+  padding: -4px -2px;
   border-bottom: 2px solid #1a2633;
   display: flex;
   justify-content: space-between;
   align-items: center;
+  position: relative;
+  width: 100%;
+  z-index: 1000;
+  top: 0;
 }
 
 .menu {
@@ -21,9 +25,11 @@
   position: relative;
   margin-right: 20px;
   cursor: pointer;
-  padding: 10px 15px;
+  padding: 2px 4px;
   color: #fff;
   font-weight: 500;
+  transition: background-color 0.3s ease;
+  font-size: small;
 }
 
 .menu-item:hover {
@@ -38,13 +44,22 @@
   position: absolute;
   background-color: #fcf7f7;
   border: 1px solid #ccc;
-  top: 40px;
+  top: 100%;
   left: 0;
   display: none;
   padding: 10px;
   box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
   border-radius: 6px;
   z-index: 10;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  opacity: 0;
+  transform: translateY(-10px);
+}
+
+.menu-item:hover .dropdown {
+  display: block;
+  opacity: 1;
+  transform: translateY(0);
 }
 
 .dropdown li {
@@ -52,12 +67,77 @@
   cursor: pointer;
   white-space: nowrap;
   color: #333;
+  transition: background-color 0.2s ease;
 }
 
 .dropdown li:hover {
   background-color: #f0f0f0;
 }
 
-.menu-item:hover .dropdown {
-  display: block;
+.file-tab-bar {
+  display: flex;
+  background-color: #1a2633;
+  border-bottom: 2px solid #2e3b4e;
+  overflow-x: auto;
+  padding: -4px -2px;
+  margin-top: -50px;
+  position: relative;
+  width: 100%;
+  z-index: 999;
+  top: 50px;
+}
+
+.file-tab-bar::-webkit-scrollbar {
+  height: 8px;
+}
+
+.file-tab-bar::-webkit-scrollbar-thumb {
+  background-color: #555;
+  border-radius: 4px;
+}
+
+.file-tab-bar::-webkit-scrollbar-track {
+  background: #1a2633;
+}
+
+.file-tab {
+  padding: 2px 4px;
+  cursor: pointer;
+  color: #fff;
+  white-space: nowrap;
+  display: flex;
+  font-size: small;
+  align-items: center;
+  position: relative;
+  margin-right: 20px;
+}
+
+.file-tab.active {
+  background-color: #1a2633;
+  border-bottom: 2px solid #fff;
+}
+
+.close-btn {
+  margin-left: 10px;
+  font-size: 12px;
+  color: #ccc;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.close-btn:hover {
+  color: #fff;
+}
+.edit-input {
+  border: none;
+  padding: 5px;
+  font-size: 14px;
+  width: auto;
+  background-color: #2e3b4e;
+  color: #fff;
+  outline: none;
+}
+
+.edit-input::placeholder {
+  color: #ccc;
 }
