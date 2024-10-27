@@ -1,10 +1,9 @@
 .navbar {
   margin: 0;
   padding: 0;
-  background-color: #2e3b4e;
+  background-color: #181C14;
   color: #fff;
   padding: -4px -2px;
-  border-bottom: 2px solid #1a2633;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -12,6 +11,7 @@
   width: 100%;
   z-index: 1000;
   top: 0;
+
 }
 
 .menu {
@@ -76,23 +76,23 @@
 
 .file-tab-bar {
   display: flex;
-  background-color: #1a2633;
-  border-bottom: 2px solid #2e3b4e;
+  background-color: #697565;
+  /* border-bottom: 2px solid #2e3b4e; */
   overflow-x: auto;
-  padding: -4px -2px;
-  margin-top: -50px;
   position: relative;
   width: 100%;
   z-index: 999;
-  top: 50px;
+  height: 20px;
 }
 
 .file-tab-bar::-webkit-scrollbar {
-  height: 8px;
+  margin-top: 2px;
 }
 
 .file-tab-bar::-webkit-scrollbar-thumb {
   background-color: #555;
+  margin-top: 2px;
+
   border-radius: 4px;
 }
 
@@ -106,7 +106,7 @@
   color: #fff;
   white-space: nowrap;
   display: flex;
-  font-size: small;
+  font-size: x-small;
   align-items: center;
   position: relative;
   margin-right: 20px;

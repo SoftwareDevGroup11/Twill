@@ -3,11 +3,26 @@ import "./texteditor.css";
 
 import { useRef, useEffect } from "react";
 
-const TextEditor = () => {
-  let file = new FileOBJ();
-  file.parse(
-    '\n\n#include <iostream>\n\nint main() {\n    std::cout << "Hello World" << std::endl;\n}'
-  );
+interface TextEditorProps {
+	content: string | undefined; // Can be string or undefined based on your logic
+	onChange: (newContent: string) => void;
+  }
+  
+
+const TextEditor : React.FC<TextEditorProps> = ({ content = '' }) => {
+	
+	
+  const file = new FileOBJ();
+  if(!content)
+{
+	file.parse(
+		'#include <iostream>\n\nint main() {\n    std::cout << "Hello World" << std::endl;\n}'
+	  );
+	  
+}
+else{
+	file.parse(content.toString())
+}
 
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
@@ -18,7 +33,7 @@ const TextEditor = () => {
 
     if (!ctx) return;
 
-    ctx.fillStyle = "#000000"; // Background Color
+    ctx.fillStyle = "#3C3D37"; // Background Color
     ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
 
     ctx.fillStyle = "#ffffff";
@@ -27,7 +42,7 @@ const TextEditor = () => {
     ctx.font = "20px courier";
 
     for (let j = 0; j < file.lines.length; j++) {
-      let text = file.lines[j].dump();
+      const text = file.lines[j].dump();
       for (let i = 0; i < text.length; i++) {
         ctx.fillText(text[i], i * 12, 20 + 20 * j);
       }
@@ -91,6 +106,7 @@ const TextEditor = () => {
       tabIndex={0}
       onKeyDown={onInputHandle}
       onClick={() => canvasRef.current?.focus()}
+	  
     ></canvas>
   );
 };
