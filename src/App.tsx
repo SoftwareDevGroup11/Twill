@@ -27,9 +27,9 @@ function App() {
     setIsRenaming(false);
   };
 
-  const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>, index: number) => {
+  const handleNameChange = (e: string, index: number) => {
     const updatedFiles = [...files];
-    updatedFiles[index].name = e.target.value;
+    updatedFiles[index].name = e;
     setFiles(updatedFiles);
   };
 
@@ -107,6 +107,7 @@ function App() {
     const newName = prompt("Enter a new name for the file:");
     if (newName) {
       const currentFile = files[currentFileIndex];
+      handleNameChange(newName,currentFileIndex)
       const blob = new Blob([currentFile.content], { type: "text/plain" });
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
