@@ -45,7 +45,7 @@ export class FileOBJ {
     }
 
     backspace() {
-	if (this.getCursor()[1] == 0) {
+	if (this.getCursor()[1] == 0 && this.currentLine > 0) {
 	    this.lines[this.currentLine - 1].moveCursorToEnd();
 	    const currentLineContent = this.lines[this.currentLine].dump()
 	    this.lines[this.currentLine - 1].insertText(currentLineContent);
@@ -94,11 +94,19 @@ export class FileOBJ {
     }
 
     moveCursorLeftBy(amount: number) {
-	this.lines[this.currentLine].moveCursorLeftBy(amount);
+	if (this.getCursor()[1] == 0 && this.currentLine > 0) {
+	    this.currentLine--;
+	} else {
+	    this.lines[this.currentLine].moveCursorLeftBy(amount);
+	}
     }
 
     moveCursorRightBy(amount: number) {
-	this.lines[this.currentLine].moveCursorRightBy(amount);
+	if (this.lines[this.currentLine].right >= MAX_GBUFFER_LENGTH - 1) {
+	    this.currentLine++;
+	} else {
+	    this.lines[this.currentLine].moveCursorRightBy(amount);
+	}
     }
 
     parse(content: string = ''): void {
