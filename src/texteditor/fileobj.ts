@@ -9,6 +9,8 @@ export class FileOBJ {
 	this.name = name;
 	this.lines = Array<GBuffer>(0);
 	this.currentLine = 0;
+	
+	this.lines.push(new GBuffer());
     }
 
     print() {
@@ -16,6 +18,12 @@ export class FileOBJ {
 	    line.print();
 	}
     }
+
+	dump() : string {
+		let content = "";
+		for (const line of this.lines) content += line.dump() + '\n';
+		return content;
+	}
 
     insertNewline() {
 	let currGBuff = this.lines[this.currentLine];
@@ -85,7 +93,7 @@ export class FileOBJ {
 	while (end <= content.length - 1) {
 	    end = this.nextEOL(content, start);
 
-	    let gbuff = new GBuffer();
+	    const gbuff = new GBuffer();
 	    gbuff.insertText(content.slice(start, end));
 	    gbuff.setCursor(0);
 	    this.lines.push(gbuff);

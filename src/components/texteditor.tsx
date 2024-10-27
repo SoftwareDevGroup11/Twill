@@ -1,29 +1,21 @@
-import { FileOBJ } from "../texteditor/fileobj";
+import { FileOBJ } from '../texteditor/fileobj';
 import "./texteditor.css";
 
 import { useRef, useEffect } from "react";
 
-interface TextEditorProps {
-	content: string | undefined; // Can be string or undefined based on your logic
-	onChange: (newContent: string) => void;
-  }
-  
+interface TextEditorProp {
+	fileOBJs: Array<FileOBJ>,
+	index: number
+};
 
-const TextEditor : React.FC<TextEditorProps> = ({ content = '' }) => {
-	
-	
-  const file = new FileOBJ();
-  if(!content)
-{
-	file.parse(
-		'#include <iostream>\n\nint main() {\n    std::cout << "Hello World" << std::endl;\n}'
-	  );
-	  
-}
-else{
-	file.parse(content.toString())
-}
 
+const TextEditor : React.FC<TextEditorProp>= (props: TextEditorProp) => {
+  const file = props.fileOBJs[props.index];
+
+    // file.parse(
+    //   '#include <iostream>\n\nint main() {\n    std::cout << "Hello World" << std::endl;\n}'
+    // );	
+ 
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   function draw() {
@@ -55,6 +47,10 @@ else{
       1,
       20
     );
+
+
+	console.log(file.dump())
+
   }
 
   useEffect(() => {
@@ -62,7 +58,7 @@ else{
     const canvas = canvasRef.current;
     if (!canvas) return;
     canvas.focus();
-  }, [file.lines]);
+  }, [file.lines, draw]);
 
   // TODO: Make this more clean. Add a better abstraction
   function onInputHandle(event: React.KeyboardEvent<HTMLCanvasElement>) {
@@ -106,7 +102,6 @@ else{
       tabIndex={0}
       onKeyDown={onInputHandle}
       onClick={() => canvasRef.current?.focus()}
-	  
     ></canvas>
   );
 };
