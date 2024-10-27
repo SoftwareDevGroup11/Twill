@@ -3,7 +3,7 @@ import TextEditor from './components/texteditor.tsx';
 function App() {
     return (
 	<>
-		<p>Twill</p>
+	    <p>Twill</p>
 	    <TextEditor />
 	</>
     )

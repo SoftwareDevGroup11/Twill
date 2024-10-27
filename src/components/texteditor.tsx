@@ -76,8 +76,8 @@ const TextEditor = () => {
 	<canvas 
 	    id="canvas" 
 	    ref={canvasRef} 
-	    width="1280" 
-	    height="720" 
+	    width="1920" 
+	    height="1080" 
 	    tabIndex={0}
 	    onKeyDown={onInputHandle}
 	    onClick={() => canvasRef.current?.focus()}
