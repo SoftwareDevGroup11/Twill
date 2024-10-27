@@ -56,6 +56,15 @@ export class GBuffer {
 	    this.moveCursorLeftBy(amount);
     }
 
+    moveCursorToBeginning() : void {
+	this.setCursor(0);
+    }
+
+    moveCursorToEnd() : void {
+	let chars_at_the_end = MAX_GBUFFER_LENGTH - this.right - 1;
+	this.moveCursorRightBy(chars_at_the_end);
+    }
+
     moveCursorLeftBy(amount : number) : void {
 	for (let i = 0; i < amount; i++) {
 	    this.moveCursorLeft();

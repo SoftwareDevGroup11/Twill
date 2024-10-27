@@ -36,7 +36,8 @@ test('Treesitter Basic Parsing', () => {
 
     function DFS(node: Parser.SyntaxNode, depth: number = 0) : undefined {
 
-	console.log("  ".repeat(depth) + `${node.typeId} =) ${node.isNamed ? "Named" : "Unnamed"} ${node.type}`);
+	// console.log("  ".repeat(depth) + `${node.typeId} =) ${node.isNamed ? "Named" : "Unnamed"} ${node.type}`);
+	// console.log("  ".repeat(depth) + node.type);
 
 	for (let child of node.children) {
 	    DFS(child, depth + 1);

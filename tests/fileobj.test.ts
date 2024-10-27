@@ -5,7 +5,7 @@ test('Checks FileOBJ initialization', () => {
     let file = new FileOBJ();
 
     expect(file.name).toBe('');
-    expect(file.lines.length).toBe(0);
+    expect(file.lines.length).toBe(1);
 });
 
 test('Checks FileOBJ gbuffer list construction', () => {
@@ -38,4 +38,17 @@ test('Checks FileOBJ cursor movement', () => {
 
     file.moveCursorLeftBy(3);
     expect(file.getCursor()).toStrictEqual([2, 5]);
+});
+
+test('Checks Merging of two Lines', () => {
+    let file = new FileOBJ();
+    file.parse("AAAA\nBBBB\nCCCC");
+
+    file.setCursor(1, 0);
+
+    file.print();
+
+    file.backspace();
+
+    file.print();
 });

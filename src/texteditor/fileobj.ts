@@ -1,5 +1,7 @@
 import { GBuffer } from './gbuffer';
 
+import { MAX_GBUFFER_LENGTH } from '../globals';
+
 export class FileOBJ {
     lines: Array<GBuffer>;
     name: string;
@@ -9,12 +11,20 @@ export class FileOBJ {
 	this.name = name;
 	this.lines = Array<GBuffer>(0);
 	this.currentLine = 0;
+
+	this.lines.push(new GBuffer());
     }
 
     print() {
 	for (let line of this.lines) {
 	    line.print();
 	}
+    }
+
+    dump() : string {
+	let content = "";
+	for (const line of this.lines) content += line.dump() + '\n';
+	return content;
     }
 
     insertNewline() {
@@ -34,18 +44,30 @@ export class FileOBJ {
 	this.lines[this.currentLine].insertText(text);
     }
 
-    // TODO: if we are at the beginning of the line
-    // then pressing the backspace, we go to the previous line
-    // Basically merging the current line and the above line
     backspace() {
-	this.lines[this.currentLine].backspace();
+	if (this.getCursor()[1] == 0) {
+	    this.lines[this.currentLine - 1].moveCursorToEnd();
+	    const currentLineContent = this.lines[this.currentLine].dump()
+	    this.lines[this.currentLine - 1].insertText(currentLineContent);
+	    this.lines.splice(this.currentLine, 1);
+	    this.currentLine -= 1;
+
+	    this.moveCursorLeftBy(currentLineContent.length);
+	} else {
+	    this.lines[this.currentLine].backspace();
+	}
     }
 
-    // TODO: if we are at the end of the line
-    // then pressing the delete, we bring the next line to the current line
-    // Basically merging the current line and the below line
     delete() {
-	this.lines[this.currentLine].delete();
+	if (this.lines[this.currentLine].right == MAX_GBUFFER_LENGTH - 1 && this.currentLine < this.lines.length - 1) {
+	    this.lines[this.currentLine + 1].moveCursorToBeginning();
+	    this.lines[this.currentLine + 1].insertText(this.lines[this.currentLine].dump());
+	    this.lines.splice(this.currentLine, 1);
+	    // this.currentLine += 1;
+
+	} else {
+	    this.lines[this.currentLine].delete();
+	}
     }
 
     setCursor(row: number, col: number) {
@@ -82,13 +104,26 @@ export class FileOBJ {
     parse(content: string = ''): void {
 	let start = 0;
 	let end = 0;
+
+	let firstIter = true;
 	while (end <= content.length - 1) {
 	    end = this.nextEOL(content, start);
 
-	    let gbuff = new GBuffer();
-	    gbuff.insertText(content.slice(start, end));
-	    gbuff.setCursor(0);
-	    this.lines.push(gbuff);
+	    // Handling an edge case when you put stuff in to the already
+	    // existing line for the first time and for the rest you 
+	    // add new lines
+
+	    if (!firstIter) {
+		const gbuff = new GBuffer();
+		gbuff.insertText(content.slice(start, end));
+		gbuff.setCursor(0);
+		this.lines.push(gbuff);
+	    } else {
+		const gbuff = this.lines[this.lines.length - 1];
+		gbuff.insertText(content.slice(start, end));
+		gbuff.setCursor(0);
+		firstIter = false;
+	    }
 
 	    start = end + 1;
 	}
