@@ -1,11 +1,10 @@
 import "./App.css";
 import TextEditor from "./components/texteditor.tsx";
 import { useState } from "react";
+import { FileOBJ } from "./texteditor/fileobj.ts";
 
 function App() {
-  const [files, setFiles] = useState([
-    { id: 1, name: "Untitled", content: "" },
-  ]);
+  const [fileOBJs, setFileOBJs] = useState<Array<FileOBJ>>([new FileOBJ('Untitled-0')]);
   const [currentFileIndex, setCurrentFileIndex] = useState(0);
   const [isRenaming, setIsRenaming] = useState(false);
   const [newFileName, setNewFileName] = useState("");
@@ -13,13 +12,17 @@ function App() {
   const [isFullScreen, setIsFullScreen] = useState(false); // For full-screen mode
 
   const addNewFile = () => {
-    const newFile = {
-      id: files.length + 1,
-      name: `Untitled-${files.length + 1}`,
-      content: "",
-    };
-    setFiles([...files, newFile]);
-    setCurrentFileIndex(files.length);
+    setFileOBJs(
+      [...fileOBJs, new FileOBJ(`Untitled-${fileOBJs.length + 1}`)]
+    );
+    setCurrentFileIndex(fileOBJs.length - 1);
+    // const newFile = {
+    //   id: files.length + 1,
+    //   name: `Untitled-${files.length + 1}`,
+    //   content: "",
+    // };
+    // setFiles([...files, newFile]);
+    // setCurrentFileIndex(files.length);
   };
 
   const handleTabClick = (index: number) => {
@@ -28,14 +31,14 @@ function App() {
   };
 
   const handleNameChange = (e: string, index: number) => {
-    const updatedFiles = [...files];
+    const updatedFiles = [...fileOBJs];
     updatedFiles[index].name = e;
-    setFiles(updatedFiles);
+    setFileOBJs(updatedFiles);
   };
 
   const removeFile = (index: number) => {
-    const updatedFiles = files.filter((_, i) => i !== index);
-    setFiles(updatedFiles);
+    const updatedFiles = fileOBJs.filter((_, i) => i !== index);
+    setFileOBJs(updatedFiles);
     if (index === currentFileIndex) {
       setCurrentFileIndex(index > 0 ? index - 1 : 0);
     } else if (index < currentFileIndex) {
@@ -46,7 +49,7 @@ function App() {
 
   const startEditing = (index: number) => {
     setIsRenaming(true);
-    setNewFileName(files[index].name);
+    setNewFileName(fileOBJs[index].name);
   };
 
   const handleRenameClick = () => {
@@ -54,9 +57,9 @@ function App() {
   };
 
   const handleRenameSubmit = () => {
-    const updatedFiles = [...files];
+    const updatedFiles = [...fileOBJs];
     updatedFiles[currentFileIndex].name = newFileName;
-    setFiles(updatedFiles);
+    setFileOBJs(updatedFiles);
     setIsRenaming(false);
   };
 
@@ -71,15 +74,21 @@ function App() {
       reader.onload = (e) => {
         if(e){
         const content = e?.target?.result as string;
-        const newFile = {
-          id: files.length + 1,
-          name: file.name,
-          content: content,
-        };
-        setFiles([...files, newFile]);
-        setCurrentFileIndex(files.length);
-        }
-        else{
+        const newFile = new FileOBJ(file.name);
+        newFile.parse(content);
+        setFileOBJs([...fileOBJs, newFile]);
+        setCurrentFileIndex(fileOBJs.length);
+
+        // const newFile = {
+        //   id: fileOBJs.length + 1,
+        //   name: file.name,
+        //   content: content,
+        // };
+        // setFileOBJs([...files, newFile]);
+        // setCurrentFileIndex(files.length);
+        // }
+
+        } else{
           console.log("Object empty")
           return ;
         }
@@ -90,8 +99,8 @@ function App() {
 
   // Save File
   const handleSaveFile = () => {
-    const currentFile = files[currentFileIndex];
-    const blob = new Blob([currentFile.content], { type: "text/plain" });
+    const currentFile = fileOBJs[currentFileIndex];
+    const blob = new Blob([currentFile.dump()], { type: "text/plain" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
@@ -106,9 +115,9 @@ function App() {
   const handleSaveAs = () => {
     const newName = prompt("Enter a new name for the file:");
     if (newName) {
-      const currentFile = files[currentFileIndex];
+      const currentFile = fileOBJs[currentFileIndex];
       handleNameChange(newName,currentFileIndex)
-      const blob = new Blob([currentFile.content], { type: "text/plain" });
+      const blob = new Blob([currentFile.dump()], { type: "text/plain" });
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
@@ -122,7 +131,7 @@ function App() {
 
   // Share
   const handleShare = () => {
-    navigator.clipboard.writeText(files[currentFileIndex].content).then(() => {
+    navigator.clipboard.writeText(fileOBJs[currentFileIndex].dump()).then(() => {
       alert("File content copied to clipboard!");
     });
   };
@@ -144,28 +153,28 @@ function App() {
 
   // Cut
   const handleCut = () => {
-    const content = files[currentFileIndex].content;
-    setClipboard(content);
-    setFiles(prevFiles => {
-      const updatedFiles = [...prevFiles];
-      updatedFiles[currentFileIndex].content = "";
-      return updatedFiles;
-    });
-    alert("Cut action performed.");
+    // const content = fileOBJs[currentFileIndex].content;
+    // setClipboard(content);
+    // setFiles(prevFiles => {
+    //   const updatedFiles = [...prevFiles];
+    //   updatedFiles[currentFileIndex].content = "";
+    //   return updatedFiles;
+    // });
+    // alert("Cut action performed.");
   };
 
   // Copy
   const handleCopy = () => {
-    const content = files[currentFileIndex].content;
+    const content = fileOBJs[currentFileIndex].dump();
     setClipboard(content);
     alert("Content copied to clipboard.");
   };
 
   // Paste
   const handlePaste = () => {
-    setFiles(prevFiles => {
+    setFileOBJs(prevFiles => {
       const updatedFiles = [...prevFiles];
-      updatedFiles[currentFileIndex].content += clipboard;
+      updatedFiles[currentFileIndex].insertText(clipboard);
       return updatedFiles;
     });
     alert("Pasted from clipboard.");
@@ -183,7 +192,7 @@ function App() {
 
   // Preview
   const handlePreview = () => {
-    alert(`Preview of "${files[currentFileIndex].name}":\n\n${files[currentFileIndex].content}`);
+    // alert(`Preview of "${files[currentFileIndex].name}":\n\n${files[currentFileIndex].content}`);
   };
 
   return (
@@ -238,9 +247,9 @@ function App() {
         </ul>
       </nav>
       <div className="file-tab-bar">
-        {files.map((file, index) => (
+        {fileOBJs.map((file, index) => (
           <div
-            key={file.id}
+            key={index}
             className={`file-tab ${index === currentFileIndex ? "active" : ""}`}
             onClick={() => handleTabClick(index)}
           >
@@ -268,14 +277,9 @@ function App() {
           </div>
         ))}
       </div>
-      <TextEditor
-      // ... other props and state
-        content={files[currentFileIndex]?.content}
-        onChange={(newContent) => {
-          const updatedFiles = [...files];
-          updatedFiles[currentFileIndex].content = newContent;
-          setFiles(updatedFiles);
-        }}
+      <TextEditor 
+        fileOBJs = {fileOBJs}
+        index = {currentFileIndex}
       />
     </>
   );

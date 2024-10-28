@@ -1,0 +1,25 @@
+{
+    "gruvbox_dark" : {
+	"black"	    : "#1D2021",
+	"red"	    : "#FB4934",
+	"green"	    : "#B8BB26",
+	"yellow"    : "#FABD2F",
+	"blue"	    : "#83A598",
+	"purple"    : "#D3869B",
+	"gray"	    : "#A89984",
+	"white"	    : "#EBDBB2",
+
+	"fg"	    : "white",
+	"bg"	    : "black",
+    },
+    "gruvbox_light" : {
+	"black"	    : "#1D2021",
+	"red"	    : "#FB4934",
+	"green"	    : "#B8BB26",
+	"yellow"    : "#FABD2F",
+	"blue"	    : "#83A598",
+	"purple"    : "#D3869B",
+	"gray"	    : "#A89984",
+	"white"	    : "#EBDBB2",
+    },
+}
