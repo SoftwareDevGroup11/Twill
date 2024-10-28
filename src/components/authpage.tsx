@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import {initializeApp} from 'firebase/app';
 import {getAuth, GoogleAuthProvider, signInWithPopup, User, signOut} from "firebase/auth";
-
+import './authpage.css'
 // Replace with your Firebase configuration
 const firebaseConfig = {
     apiKey: "AIzaSyDuM8iXDlgdzBYiRvH-jrTdt00JZQK0Xk0",
@@ -45,14 +45,15 @@ function GoogleSignInButton() {
     }
 
     return (
-        <div>
+        <div className="container">
+            <h1 className="heading">Twill - A Modern Text Editor</h1>
             {user ? (
-                <div>
+                <div className="user-container">
                     <p>Welcome, {user.displayName}!</p>
-                    <button onClick={() => signou()}>Sign Out</button>
+                    <button className="button" onClick={signou}>Sign Out</button>
                 </div>
             ) : (
-                <button onClick={signInWithGoogle}>Sign in with Google</button>
+                <button className="button" onClick={signInWithGoogle}>Sign in with Google</button>
             )}
         </div>
     );

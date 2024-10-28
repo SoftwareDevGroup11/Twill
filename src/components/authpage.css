@@ -1,0 +1,54 @@
+/* GoogleSignInButton.css */
+
+body, html {
+    height: 100%;
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background-color: #e3f2fd;
+}
+
+.container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    text-align: center;
+}
+
+.heading {
+    font-size: 2.5rem;
+    color: #1976d2;
+    margin-bottom: 20px;
+}
+
+.user-container p {
+    font-size: 1.2rem;
+    color: #424242;
+}
+
+.button {
+    padding: 10px 25px;
+    font-size: 1rem;
+    color: white;
+    background-color: #1e88e5;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.button:hover {
+    background-color: #1565c0;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.button:active {
+    background-color: #0d47a1;
+}
+
+.user-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
