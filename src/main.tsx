@@ -1,9 +1,9 @@
-import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
-import GoogleSignInButton from "./components/authpage.tsx";
+import {BrowserRouter} from "react-router-dom";
+import App from "./App.tsx";
 
 createRoot(document.getElementById('root')!).render(
-    <StrictMode>
-    <GoogleSignInButton />
-    </StrictMode>,
+    <BrowserRouter>
+        <App />
+    </BrowserRouter>
 )

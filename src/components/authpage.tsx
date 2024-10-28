@@ -27,7 +27,7 @@ function GoogleSignInButton() {
             setUser(user);
             // Handle successful sign-in (e.g., redirect to a dashboard)
             // You can use a router or other navigation methods here
-            window.location.href = "/texteditor" // Replace with your desired URL
+            window.location.href = "/Twill/editor" // Replace with your desired URL
         } catch (error) {
             console.error(error);
             // Handle sign-in errors (e.g., display an error message)

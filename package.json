@@ -25,7 +25,8 @@
     "tree-sitter-python": "^0.23.2",
     "tree-sitter-typescript": "^0.23.0",
     "vite-plugin-node-polyfills": "^0.22.0",
-    "web-tree-sitter": "^0.24.3"
+    "web-tree-sitter": "^0.24.3",
+    "react-router-dom": "^6.27.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.9.0",
