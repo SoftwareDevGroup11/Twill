@@ -39,16 +39,3 @@ test('Checks FileOBJ cursor movement', () => {
     file.moveCursorLeftBy(3);
     expect(file.getCursor()).toStrictEqual([2, 5]);
 });
-
-test('Checks Merging of two Lines', () => {
-    let file = new FileOBJ();
-    file.parse("AAAA\nBBBB\nCCCC");
-
-    file.setCursor(1, 0);
-
-    file.print();
-
-    file.backspace();
-
-    file.print();
-});
