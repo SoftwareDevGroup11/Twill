@@ -1,7 +1,7 @@
 import { FileOBJ } from '../src/texteditor/fileobj';
 import { expect, test } from 'vitest';
-import Parser from 'tree-sitter';
-import Cpp from 'tree-sitter-cpp';
+
+import Parser from 'web-tree-sitter';
 
 import themes from '../themes/colors.json';
 
@@ -13,38 +13,66 @@ test('Treesitter Basic Parsing', () => {
     let source_code = '#include <iostream>\n\nint main() {\n    std::cout << \"Hello World\" << std::endl;\n}';
     file.parse(source_code);
 
-    const parser = new Parser();
-    parser.setLanguage(Cpp);
+    console.log(10);
 
-    function offset(index: number, pos?: Parser.Point): string | null {
-	index; // unused
-	if (!pos) return null;
+    Parser.init().then(async () => {
+	console.log(10);
+	const parser = new Parser();
 
-	let line = file.lines[pos.row];
-	// console.log(`Row: ${pos.row} Col: ${pos.column}`);
+	const Cpp = await Parser.Language.load('./tree-sitter-cpp.wasm');
 
-	if (line) {
-	    let sliced = line.dump().slice(pos.column) + '\n';
-	    // console.log(sliced);
-	    return sliced;
+	parser.setLanguage(Cpp);
+
+	function offset(index: number, pos?: Parser.Point): string | null {
+	    index; // unused
+	    if (!pos) return null;
+
+	    let line = file.lines[pos.row];
+	    // console.log(`Row: ${pos.row} Col: ${pos.column}`);
+
+	    if (line) {
+		let sliced = line.dump().slice(pos.column) + '\n';
+		// console.log(sliced);
+		return sliced;
+	    }
+
+	    return null;
 	}
 
-	return null;
-    }
+	let aTree = parser.parse(offset);
+	let theme = themes["gruvbox_dark"];
+	let colors_count = Object.keys(theme).length - 2;
+	console.log(colors_count);
 
-    let aTree = parser.parse(offset);
+	function DFS(node: Parser.SyntaxNode, depth: number = 0) : undefined {
 
-    function DFS(node: Parser.SyntaxNode, depth: number = 0) : undefined {
+	    let color : string;
+	    if (node.isNamed) {
+		let colorIndex = node.typeId % colors_count ;
+		let color_key = Object.keys(theme)[colorIndex];
 
-	// console.log("  ".repeat(depth) + `${node.typeId} =) ${node.isNamed ? "Named" : "Unnamed"} ${node.type}`);
-	// console.log("  ".repeat(depth) + node.type);
+		color = theme[color_key];
+	    } else {
+		color = theme[theme["fg"]];
+	    }
 
-	for (let child of node.children) {
-	    DFS(child, depth + 1);
+	    console.log("  ".repeat(depth) + `${node.type} + ${color} ++ ${node.text}`);
+
+	    // console.log("  ".repeat(depth) + `${node.typeId} =) ${node.isNamed ? "Named" : "Unnamed"} ${node.type}`);
+	    // console.log("  ".repeat(depth) + node.type);
+
+
+	    for (let child of node.children) {
+		DFS(child, depth + 1);
+	    }
+
 	}
 
-    }
-
-    DFS(aTree.rootNode);
-    // console.log(aTree.rootNode.child(0));
+	DFS(aTree.rootNode);
+	expect(0).toBe(1);
+	// console.log(aTree.rootNode.child(0));
+	//
+    }).catch((e) => {
+	console.error("Failed to initialize parser:", e);
+    });
 });

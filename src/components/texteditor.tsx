@@ -1,61 +1,161 @@
 import { FileOBJ } from '../texteditor/fileobj';
 import "./texteditor.css";
 
+import { FONT_SIZE, LanguagesPath, Languages, Colors } from '../globals';
+
 import { useRef, useEffect } from "react";
+
+import Parser from 'web-tree-sitter';
 
 interface TextEditorProp {
     fileOBJs: Array<FileOBJ>,
     index: number
 };
 
-
 const TextEditor : React.FC<TextEditorProp>= (props: TextEditorProp) => {
     const file = props.fileOBJs[props.index];
 
-    // file.parse(
-    //   '#include <iostream>\n\nint main() {\n    std::cout << "Hello World" << std::endl;\n}'
-    // );	
+    const parserRef = useRef<Parser | null>(null);
 
-    const canvasRef = useRef<HTMLCanvasElement>(null);
+    useEffect(() => {
+	const initParser = async () => {
+	    await Parser.init({
+		locateFile(scriptName: string, scriptDirectory: string) {
+		    (scriptDirectory)
+		    return scriptName;
+		},
+	    });
+
+	    const parser = new Parser();
+	    parserRef.current = parser;
+
+	    let file_type = file.name.split('.').pop();
+	    if (file_type) {
+		console.log(file_type);
+		if (file_type in LanguagesPath) {
+		    if (Languages[file_type] === undefined) {
+			Languages[file_type] = await Parser.Language.load(LanguagesPath[file_type]);
+		    }
+		    parser.setLanguage(Languages[file_type]);
+		    draw();
+		} else {
+		    parserRef.current = null;
+		}
+		console.log(Languages[file_type]);
+	    }
+	};
+
+	initParser().catch(error => {
+	    console.error("Failed to initialize parser:", error);
+	});
+
+    }, [props.index, file.name]);
+
+    let colors_count = Object.keys(Colors).length - 2;
+    console.log(colors_count);
+
+    function offset(index: number, pos?: Parser.Point): string | null {
+	index; // unused
+	if (!pos) return null;
+
+	let line = file.lines[pos.row];
+
+	if (line) {
+	    let sliced = line.dump().slice(pos.column) + '\n';
+	    return sliced;
+	}
+
+	return null;
+    }
+
+    const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
     function draw() {
 	const canvas = canvasRef.current;
 	if (!canvas) return;
-	const ctx = canvas.getContext("2d");
 
+	const ctx: CanvasRenderingContext2D | null = canvas.getContext("2d");
 	if (!ctx) return;
 
-	ctx.fillStyle = "#3C3D37"; // Background Color
+	ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+	ctx.fillStyle = "#1D2021"; // Background Color
 	ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
 
-	ctx.fillStyle = "#ffffff";
+	// Set font and line height
+	ctx.font = `bold ${FONT_SIZE}px courier`;
+	const lineHeight = FONT_SIZE * 1.5; // Set line height for better spacing
 
-	// Font Should be a Monospace font, or else it will break the cursor
-	ctx.font = "20px courier";
+	let parser = parserRef.current;
+	if (parser) {
+	    const tree = parser.parse(offset);
+	    DFS(ctx, tree.rootNode);
+	} else {
+	    ctx.fillStyle = "#ffffff";
+	    for (let j = 0; j < file.lines.length; j++) {
+		const text = file.lines[j].dump();
 
-	for (let j = 0; j < file.lines.length; j++) {
-	    const text = file.lines[j].dump();
-	    for (let i = 0; i < text.length; i++) {
-	        ctx.fillText(text[i], i * 12, 20 + 20 * j);
+		for (let i = 0; i < text.length; i++) {
+		    let x = i * 12;
+		    let y = j * (FONT_SIZE * 1.5) + FONT_SIZE;
+
+		    ctx.fillText(text[i], x, y);
+		}
 	    }
 	}
 
 	// Drawing the cursor
+	ctx.fillStyle = "#ffffff"; // Set cursor color to white
 	ctx.fillRect(
 	    file.lines[file.currentLine].left * 12,
-	    file.currentLine * 20 + 5,
+	    file.currentLine * lineHeight,
 	    1,
-	    20
+	    lineHeight // Change cursor height to match line height
 	);
 
+	/*
+	ctx.fillRect(
+	    file.lines[file.currentLine].left * 12,
+	    25 + file.currentLine * lineHeight,
+	    12,
+	    1
+	);
+	*/
+    }
 
-	console.log(file.dump())
+    function DFS(ctx: CanvasRenderingContext2D, node: Parser.SyntaxNode) {
+	let color: string;
 
+	// Determine the color based on the node type
+	if (node.isNamed) {
+	    let colorIndex = node.typeId % colors_count;
+	    let color_key = Object.keys(Colors)[colorIndex];
+	    color = Colors[color_key];
+	    ctx.fillStyle = color;
+	} else {
+	    color = "#EBDBB2";
+	    ctx.fillStyle = color;
+	    // color = "#EBDBB2";
+	}
+
+	let start = node.startPosition;
+	let end = node.endPosition;
+
+	// Calculate position to draw text
+	let text = file.slice([start.row, start.column], [end.row, end.column]);
+	let y = start.row * (FONT_SIZE * 1.5) + FONT_SIZE; // Adjust y position based on line height
+
+	ctx.fillText(text, start.column * 12, y); // Draw text at calculated position
+
+	// Recursively draw child nodes
+	for (let child of node.children) {
+	    DFS(ctx, child);
+	}
     }
 
     useEffect(() => {
 	draw();
-	const canvas = canvasRef.current;
+	const canvas: HTMLCanvasElement | null = canvasRef.current;
 	if (!canvas) return;
 	canvas.focus();
     }, [file.lines, draw]);
@@ -94,8 +194,21 @@ const TextEditor : React.FC<TextEditorProp>= (props: TextEditorProp) => {
 		draw();
 	    }
 	}
-	if (event.type === "mousedown") {
 
+	if (event.type === "mousedown") {
+	    let e = event as React.MouseEvent<HTMLCanvasElement>;
+
+	    const rect = (e.target as HTMLElement).getBoundingClientRect();
+
+	    const x = e.clientX - rect.left;
+	    const y = e.clientY - rect.top;
+
+	    const row = Math.floor(y / (FONT_SIZE * 1.5)); // Line height
+	    const column = Math.floor(x / 12); // Width of each character (assuming monospaced font)
+
+	    file.setCursor(row, column);
+
+	    draw();
 	}
     }
 
@@ -107,6 +220,7 @@ const TextEditor : React.FC<TextEditorProp>= (props: TextEditorProp) => {
 	height="1080" 
 	tabIndex={0}
 	onKeyDown={onInputHandle}
+	onMouseDown={onInputHandle}
 	onClick={() => canvasRef.current?.focus()}
 	></canvas>
     )

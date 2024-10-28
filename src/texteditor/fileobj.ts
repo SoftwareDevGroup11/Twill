@@ -27,6 +27,11 @@ export class FileOBJ {
 	return content;
     }
 
+    slice(start: [number, number], end: [number, number]) : string {
+	let line = this.lines[start[0]];
+	return line.dump().slice(start[1], end[1] + 1);
+    }
+
     insertNewline() {
 	let currGBuff = this.lines[this.currentLine];
 	let newLine = new GBuffer();
@@ -72,7 +77,6 @@ export class FileOBJ {
 
     setCursor(row: number, col: number) {
 	if (!(0 <= row && row < this.lines.length)) return;
-
 	this.currentLine = row;
 	this.lines[this.currentLine].setCursor(col);
     }
@@ -123,12 +127,12 @@ export class FileOBJ {
 
 	    if (!firstIter) {
 		const gbuff = new GBuffer();
-		gbuff.insertText(content.slice(start, end));
+		gbuff.insertText(content.slice(start, end).replace("\t", "    "));
 		gbuff.setCursor(0);
 		this.lines.push(gbuff);
 	    } else {
 		const gbuff = this.lines[this.lines.length - 1];
-		gbuff.insertText(content.slice(start, end));
+		gbuff.insertText(content.slice(start, end).replace("\t", "    "));
 		gbuff.setCursor(0);
 		firstIter = false;
 	    }
