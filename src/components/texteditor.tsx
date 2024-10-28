@@ -3,7 +3,7 @@ import "./texteditor.css";
 
 import { FONT_SIZE, LanguagesPath, Languages, Colors } from '../globals';
 
-import { useRef, useEffect, useState } from "react";
+import { useRef, useEffect } from "react";
 
 import Parser from 'web-tree-sitter';
 
@@ -83,44 +83,44 @@ const TextEditor : React.FC<TextEditorProp>= (props: TextEditorProp) => {
 	ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
 
 	// Set font and line height
-	ctx.font = `${FONT_SIZE}px courier`;
+	ctx.font = `bold ${FONT_SIZE}px courier`;
 	const lineHeight = FONT_SIZE * 1.5; // Set line height for better spacing
 
-	    let parser = parserRef.current;
-	    if (parser) {
-		const tree = parser.parse(offset);
-		DFS(ctx, tree.rootNode);
-	    } else {
-		ctx.fillStyle = "#ffffff";
-		for (let j = 0; j < file.lines.length; j++) {
-		    const text = file.lines[j].dump();
+	let parser = parserRef.current;
+	if (parser) {
+	    const tree = parser.parse(offset);
+	    DFS(ctx, tree.rootNode);
+	} else {
+	    ctx.fillStyle = "#ffffff";
+	    for (let j = 0; j < file.lines.length; j++) {
+		const text = file.lines[j].dump();
 
-		    for (let i = 0; i < text.length; i++) {
-			let x = i * 12;
-			let y = j * (FONT_SIZE * 1.5) + FONT_SIZE;
+		for (let i = 0; i < text.length; i++) {
+		    let x = i * 12;
+		    let y = j * (FONT_SIZE * 1.5) + FONT_SIZE;
 
-			ctx.fillText(text[i], x, y);
-		    }
+		    ctx.fillText(text[i], x, y);
 		}
 	    }
+	}
 
-	    // Drawing the cursor
-	    ctx.fillStyle = "#ffffff"; // Set cursor color to white
-	    ctx.fillRect(
-		file.lines[file.currentLine].left * 12,
-		file.currentLine * lineHeight,
-		1,
-		lineHeight // Change cursor height to match line height
-	    );
+	// Drawing the cursor
+	ctx.fillStyle = "#ffffff"; // Set cursor color to white
+	ctx.fillRect(
+	    file.lines[file.currentLine].left * 12,
+	    file.currentLine * lineHeight,
+	    1,
+	    lineHeight // Change cursor height to match line height
+	);
 
-	    /*
-	    ctx.fillRect(
-		file.lines[file.currentLine].left * 12,
-		25 + file.currentLine * lineHeight,
-		12,
-		1
-	    );
-	    */
+	/*
+	ctx.fillRect(
+	    file.lines[file.currentLine].left * 12,
+	    25 + file.currentLine * lineHeight,
+	    12,
+	    1
+	);
+	*/
     }
 
     function DFS(ctx: CanvasRenderingContext2D, node: Parser.SyntaxNode) {
@@ -193,6 +193,22 @@ const TextEditor : React.FC<TextEditorProp>= (props: TextEditorProp) => {
 		file.insertText("    "); // added a very naive implementation of TAB, using movecursorRightby 4 doesn't provide intended output
 		draw();
 	    }
+	}
+
+	if (event.type === "mousedown") {
+	    let e = event as React.MouseEvent<HTMLCanvasElement>;
+
+	    const rect = (e.target as HTMLElement).getBoundingClientRect();
+
+	    const x = e.clientX - rect.left;
+	    const y = e.clientY - rect.top;
+
+	    const row = Math.floor(y / (FONT_SIZE * 1.5)); // Line height
+	    const column = Math.floor(x / 12); // Width of each character (assuming monospaced font)
+
+	    file.setCursor(row, column);
+
+	    draw();
 	}
     }
 
