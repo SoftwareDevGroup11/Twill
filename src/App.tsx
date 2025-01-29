@@ -1,7 +1,10 @@
 import "./App.css";
 import {Routes, Route} from 'react-router-dom';
+
+/*
 import EditorSceen from "./components/mainscreen.tsx";
 import GoogleSignInButton from "./components/authpage.tsx";
+*/
 
 function App() {
     return (
