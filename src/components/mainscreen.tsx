@@ -48,6 +48,7 @@ function EditorSceen() {
     };
 
     const startEditing = (index: number) => {
+	index;
         setIsRenaming(true);
 	let newName = prompt("Enter new name");
 	if (newName) {
