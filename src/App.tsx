@@ -5,10 +5,11 @@ import GoogleSignInButton from "./components/authpage.tsx";
 
 function App() {
     return (
-	<Routes>
+	    <EditorSceen />
+	/*<Routes>
 	<Route path="/Twill" element={<GoogleSignInButton />} />
 	<Route path="/Twill/editor" element={<EditorSceen />} />
-	</Routes>
+	</Routes>*/
     );
 }
 
