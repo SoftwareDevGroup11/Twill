@@ -49,7 +49,10 @@ function EditorSceen() {
 
     const startEditing = (index: number) => {
         setIsRenaming(true);
-        setNewFileName(fileOBJs[index].name);
+	let newName = prompt("Enter new name");
+	if (newName) {
+	    setNewFileName(newName);
+	}
     };
 
     const handleRenameClick = () => {
